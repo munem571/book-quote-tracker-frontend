@@ -1,27 +1,24 @@
 <script setup>
-const quotes = [
-  {
-    id: 1,
-    bookTitle: 'Clean Code',
-    passageText: 'Even bad code can function.',
-    pageNumber: 14,
-    category: 'INSPIRATION'
-  },
-  {
-    id: 2,
-    bookTitle: 'Der Erlkönig',
-    passageText: 'Wer reitet so spät durch Nacht und Wind?',
-    pageNumber: 1,
-    category: 'KLASSIK'
-  },
-  {
-    id: 3,
-    bookTitle: '1984',
-    passageText: 'Who controls the past controls the future.',
-    pageNumber: 35,
-    category: 'ROMAN'
+import { ref, onMounted } from 'vue'
+
+// 1. Reaktives Array anlegen (startet leer).
+const quotes = ref([])
+
+// 2. Funktion zum Holen der Daten vom Backend
+async function fetchQuotes() {
+  try {
+    const response = await fetch('https://webtech-backend-eo0l.onrender.com/api/v1/quotes')
+    const data = await response.json()
+    quotes.value = data
+  } catch (error) {
+    console.error('Fehler beim Laden der Zitate:', error)
   }
-]
+}
+
+// 3. Beim Laden der Seite automatisch ausführen
+onMounted(() => {
+  fetchQuotes()
+})
 </script>
 
 <template>

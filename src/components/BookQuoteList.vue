@@ -18,14 +18,12 @@ const searchText = ref('')
 const selectedCategory = ref('')
 const sortBy = ref('titleAsc')
 
-// Kategorien aus den vorhandenen Zitaten ermitteln.
 const categories = computed(() => {
   return [...new Set(quotes.value.map(quote => quote.category))]
       .filter(Boolean)
       .sort((a, b) => a.localeCompare(b, 'de'))
 })
 
-// Suche, Filter und Sortierung gemeinsam anwenden.
 const displayedQuotes = computed(() => {
   const search = searchText.value.trim().toLocaleLowerCase('de')
 
@@ -206,194 +204,298 @@ onMounted(fetchQuotes)
 </script>
 
 <template>
-  <section>
-    <h1>Meine Buchzitate</h1>
+  <section class="library">
+    <header class="topbar">
+      <a class="brand" href="#">
+        <span class="brand-icon" aria-hidden="true">❧</span>
+        Lesespuren<span class="brand-dot">.</span>
+      </a>
 
-    <form @submit.prevent="saveQuote">
-      <h2>
-        {{ editingId !== null ? 'Zitat bearbeiten' : 'Neues Zitat hinzufügen' }}
-      </h2>
+      <span class="topbar-note">DEIN PERSÖNLICHES ZITATARCHIV</span>
 
-      <fieldset :disabled="busy || loading">
-        <label for="bookTitle">Buchtitel</label>
-        <input
-            id="bookTitle"
-            v-model="bookTitle"
-            maxlength="255"
-            required
-        />
+      <a class="nav-link" href="#collection">
+        Meine Sammlung <span aria-hidden="true">↗</span>
+      </a>
+    </header>
 
-        <label for="passageText">Zitat / Textstelle</label>
-        <textarea
-            id="passageText"
-            v-model="passageText"
-            required
-        ></textarea>
+    <div class="hero">
+      <div class="hero-copy">
+        <p class="eyebrow">
+          <span></span>
+          FÜR GEDANKEN, DIE BLEIBEN
+        </p>
 
-        <label for="pageNumber">Seitenzahl</label>
-        <input
-            id="pageNumber"
-            v-model.number="pageNumber"
-            type="number"
-            min="1"
-            step="1"
-            required
-        />
+        <h1>
+          Gute Bücher enden.<br>
+          <em>Ihre Worte bleiben.</em>
+        </h1>
 
-        <label for="category">Kategorie</label>
-        <input
-            id="category"
-            v-model="category"
-            maxlength="255"
-            required
-        />
+        <p class="hero-description">
+          Sammle die Zeilen, die dich bewegen. Und finde sie genau dann
+          wieder, wenn du sie brauchst.
+        </p>
 
-        <button type="submit">
-          {{
-            busy
-                ? 'Bitte warten …'
-                : editingId !== null
-                    ? 'Änderungen speichern'
-                    : 'Zitat speichern'
-          }}
-        </button>
+        <div class="hero-stats">
+          <span>
+            <strong>{{ quotes.length }}</strong> gesammelte Zitate
+          </span>
+          <span>
+            <strong>{{ categories.length }}</strong> Kategorien
+          </span>
+        </div>
+      </div>
 
-        <button
-            v-if="editingId !== null"
-            type="button"
-            @click="resetForm"
-        >
-          Bearbeiten abbrechen
-        </button>
-      </fieldset>
-    </form>
+      <div class="hero-art" aria-hidden="true">
+        <div class="orbit orbit-one"></div>
+        <div class="orbit orbit-two"></div>
+        <span class="art-star">✦</span>
 
-    <p v-if="errorMessage" role="alert">
+        <div class="book book-cream">
+          <span>WORTE, DIE BLEIBEN</span>
+          <b>❧</b>
+        </div>
+
+        <div class="book book-green">
+          <span>ZWISCHEN DEN ZEILEN</span>
+          <i></i>
+          <b>Lesespuren</b>
+        </div>
+
+        <span class="art-caption">
+          Ein guter Gedanke verdient einen Platz.
+        </span>
+      </div>
+    </div>
+
+    <div class="workspace">
+      <aside class="editor">
+        <div class="panel-heading">
+          <span class="step-icon" aria-hidden="true">＋</span>
+
+          <div>
+            <p class="eyebrow">FESTHALTEN STATT VERGESSEN</p>
+            <h2>
+              {{
+                editingId !== null
+                    ? 'Zitat bearbeiten'
+                    : 'Neues Zitat hinzufügen'
+              }}
+            </h2>
+          </div>
+        </div>
+
+        <p class="editor-description">
+          Welche Zeile möchtest du bewahren?
+        </p>
+
+        <form @submit.prevent="saveQuote">
+          <fieldset :disabled="busy || loading">
+            <div class="field">
+              <label for="bookTitle">Buchtitel</label>
+              <input
+                  id="bookTitle"
+                  v-model="bookTitle"
+                  maxlength="255"
+                  placeholder="Aus welchem Buch stammt dein Zitat?"
+                  required
+              >
+            </div>
+
+            <div class="field">
+              <label for="passageText">Zitat / Textstelle</label>
+              <textarea
+                  id="passageText"
+                  v-model="passageText"
+                  placeholder="Manche Worte möchte man nicht vergessen …"
+                  required
+              ></textarea>
+            </div>
+
+            <div class="field-row">
+              <div class="field">
+                <label for="pageNumber">Seitenzahl</label>
+                <input
+                    id="pageNumber"
+                    v-model.number="pageNumber"
+                    type="number"
+                    min="1"
+                    step="1"
+                    required
+                >
+              </div>
+
+              <div class="field">
+                <label for="category">Kategorie</label>
+                <input
+                    id="category"
+                    v-model="category"
+                    maxlength="255"
+                    placeholder="z. B. Roman"
+                    required
+                >
+              </div>
+            </div>
+
+            <button class="primary-button" type="submit">
+              {{
+                busy
+                    ? 'Bitte warten …'
+                    : editingId !== null
+                        ? 'Änderungen speichern'
+                        : 'Zitat speichern'
+              }}
+              <span aria-hidden="true">↗</span>
+            </button>
+
+            <button
+                v-if="editingId !== null"
+                class="cancel-button"
+                type="button"
+                @click="resetForm"
+            >
+              Bearbeiten abbrechen
+            </button>
+          </fieldset>
+        </form>
+
+        <p class="editor-footnote">
+          <span aria-hidden="true">❧</span>
+          Ein kleiner Platz für große Gedanken.
+        </p>
+      </aside>
+
+      <section
+          id="collection"
+          class="collection"
+          aria-labelledby="collection-title"
+      >
+        <div class="collection-heading">
+          <div>
+            <p class="eyebrow">DEINE LITERARISCHE SCHATZKISTE</p>
+            <h2 id="collection-title">
+              Meine Sammlung
+              <span class="count-badge">{{ quotes.length }}</span>
+            </h2>
+          </div>
+
+          <span class="collection-decoration" aria-hidden="true">❧</span>
+        </div>
+
+        <div class="list-controls">
+          <div class="field search-field">
+            <label for="search">Suche nach Buchtitel oder Zitattext</label>
+            <input
+                id="search"
+                v-model="searchText"
+                type="search"
+                placeholder="Worte oder Bücher wiederfinden …"
+            >
+          </div>
+
+          <div class="filter-row">
+            <div class="field">
+              <label for="categoryFilter">Kategorie filtern</label>
+              <select id="categoryFilter" v-model="selectedCategory">
+                <option value="">Alle Kategorien</option>
+                <option
+                    v-for="item in categories"
+                    :key="item"
+                    :value="item"
+                >
+                  {{ item }}
+                </option>
+              </select>
+            </div>
+
+            <div class="field">
+              <label for="sort">Sortieren nach</label>
+              <select id="sort" v-model="sortBy">
+                <option value="titleAsc">Buchtitel: A–Z</option>
+                <option value="titleDesc">Buchtitel: Z–A</option>
+                <option value="pageAsc">Seitenzahl: aufsteigend</option>
+                <option value="pageDesc">Seitenzahl: absteigend</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <p v-if="loading" class="status-message" role="status">
+          Zitate werden geladen …
+        </p>
+
+        <template v-else>
+          <p class="result-count" aria-live="polite">
+            {{ displayedQuotes.length }} von {{ quotes.length }} Zitaten
+          </p>
+
+          <div v-if="quotes.length === 0" class="empty-state">
+            <span aria-hidden="true">“</span>
+            <h3>Deine Sammlung beginnt mit einer Zeile.</h3>
+            <p>Noch keine Zitate vorhanden.</p>
+            <p>Halte deinen ersten Lieblingssatz im Formular fest.</p>
+          </div>
+
+          <div
+              v-else-if="displayedQuotes.length === 0"
+              class="empty-state"
+          >
+            <h3>Keine passenden Zitate gefunden.</h3>
+            <p>
+              Versuche einen anderen Suchbegriff oder eine andere Kategorie.
+            </p>
+          </div>
+
+          <div class="quote-list">
+            <article
+                v-for="quote in displayedQuotes"
+                :key="quote.id"
+                class="quote-card"
+                :class="{ 'is-editing': editingId === quote.id }"
+            >
+              <div class="quote-topline">
+                <span class="category-badge">{{ quote.category }}</span>
+                <span class="page-label">Seite {{ quote.pageNumber }}</span>
+              </div>
+
+              <span class="quote-mark" aria-hidden="true">“</span>
+              <p class="quote-text">{{ quote.passageText }}</p>
+
+              <div class="quote-bottom">
+                <h2>{{ quote.bookTitle }}</h2>
+
+                <div class="actions">
+                  <button
+                      type="button"
+                      :disabled="busy"
+                      @click="startEditing(quote)"
+                  >
+                    Bearbeiten
+                  </button>
+
+                  <button
+                      class="delete-button"
+                      type="button"
+                      :disabled="busy"
+                      @click="deleteQuote(quote)"
+                  >
+                    Löschen
+                  </button>
+                </div>
+              </div>
+            </article>
+          </div>
+        </template>
+      </section>
+    </div>
+
+    <p v-if="errorMessage" class="error-message" role="alert">
       {{ errorMessage }}
     </p>
 
-    <div class="list-controls">
-      <label for="search">Suche nach Buchtitel oder Zitattext</label>
-      <input
-          id="search"
-          v-model="searchText"
-          type="search"
-          placeholder="Suchbegriff eingeben"
-      />
-
-      <label for="categoryFilter">Kategorie filtern</label>
-      <select id="categoryFilter" v-model="selectedCategory">
-        <option value="">Alle Kategorien</option>
-        <option
-            v-for="item in categories"
-            :key="item"
-            :value="item"
-        >
-          {{ item }}
-        </option>
-      </select>
-
-      <label for="sort">Sortieren nach</label>
-      <select id="sort" v-model="sortBy">
-        <option value="titleAsc">Buchtitel: A–Z</option>
-        <option value="titleDesc">Buchtitel: Z–A</option>
-        <option value="pageAsc">Seitenzahl: aufsteigend</option>
-        <option value="pageDesc">Seitenzahl: absteigend</option>
-      </select>
-    </div>
-
-    <p v-if="loading">Zitate werden geladen …</p>
-
-    <template v-else>
-      <p>{{ displayedQuotes.length }} von {{ quotes.length }} Zitaten</p>
-
-      <p v-if="quotes.length === 0">
-        Noch keine Zitate vorhanden.
-      </p>
-      <p v-else-if="displayedQuotes.length === 0">
-        Keine passenden Zitate gefunden.
-      </p>
-
-      <article v-for="quote in displayedQuotes" :key="quote.id">
-        <h2>{{ quote.bookTitle }}</h2>
-        <p>{{ quote.passageText }}</p>
-        <p>Seite {{ quote.pageNumber }} · {{ quote.category }}</p>
-
-        <div class="actions">
-          <button
-              type="button"
-              :disabled="busy"
-              @click="startEditing(quote)"
-          >
-            Bearbeiten
-          </button>
-
-          <button
-              type="button"
-              :disabled="busy"
-              @click="deleteQuote(quote)"
-          >
-            Löschen
-          </button>
-        </div>
-      </article>
-    </template>
+    <footer class="footer">
+      <span class="footer-brand">Lesespuren.</span>
+      <span>Deine Bücher. Deine Gedanken. Dein Archiv.</span>
+      <a href="#">Zurück nach oben ↑</a>
+    </footer>
   </section>
 </template>
-
-<style scoped>
-form {
-  margin: 24px 0;
-}
-
-fieldset,
-.list-controls {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-
-fieldset {
-  border: none;
-  padding: 0;
-  margin: 0;
-  min-width: 0;
-}
-
-input,
-textarea,
-select,
-button {
-  padding: 10px;
-  font: inherit;
-}
-
-textarea {
-  min-height: 100px;
-}
-
-button {
-  cursor: pointer;
-}
-
-button:disabled {
-  cursor: wait;
-}
-
-article {
-  border: 1px solid #888;
-  border-radius: 8px;
-  padding: 16px;
-  margin-top: 16px;
-}
-
-.actions {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-}
-
-[role="alert"] {
-  color: #e66;
-}
-</style>

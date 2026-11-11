@@ -457,7 +457,6 @@ onMounted(fetchQuotes)
                 <span class="page-label">Seite {{ quote.pageNumber }}</span>
               </div>
 
-              <span class="quote-mark" aria-hidden="true">“</span>
               <p class="quote-text">{{ quote.passageText }}</p>
 
               <div class="quote-bottom">

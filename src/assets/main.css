@@ -587,20 +587,22 @@ fieldset {
   white-space: nowrap;
 }
 
-.quote-mark {
-  display: block;
-  font: 53px Georgia, serif;
-  color: #adb99a;
-  height: 41px;
-  margin-top: 5px;
-}
-
 .quote-text {
+  margin-top: 16px;
   font: normal 21px/1.6 Georgia, 'Times New Roman', serif;
   color: #344932;
   white-space: pre-wrap;
   overflow-wrap: anywhere;
   padding-bottom: 23px;
+}
+
+/* Zitat in deutschen Anführungszeichen: „ … “ */
+.quote-text::before {
+  content: '„';
+}
+
+.quote-text::after {
+  content: '“';
 }
 
 .quote-bottom {
